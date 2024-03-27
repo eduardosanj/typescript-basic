@@ -1,5 +1,39 @@
 
+//Validation data
+interface Validatable {
 
+    value: string | number;
+    required?: boolean;
+    minLength?: number;
+    maxLenght?: number;
+    min?: number;
+    max?: number;
+}
+
+function validate(validaTableInput: Validatable) {
+
+    let isValid = true;
+    if (validaTableInput.required) {
+        if (validaTableInput.value === 'string') {
+            isValid = isValid && validaTableInput.value.toString().trim().length !== 0;
+        }
+        if (validaTableInput.minLength != null && typeof validaTableInput.value === 'string') {
+            isValid = isValid && validaTableInput.value.length >= validaTableInput.minLength;
+        }
+        if (validaTableInput.maxLenght != null && typeof validaTableInput.value === 'string') {
+            isValid = isValid && validaTableInput.value.length <= validaTableInput.maxLenght;
+        }
+        if (validaTableInput.min != null && typeof validaTableInput.value === 'number') {
+            isValid = isValid && validaTableInput.value >= validaTableInput.min;
+        }
+        if (validaTableInput.max != null && typeof validaTableInput.value === 'number') {
+            isValid = isValid && validaTableInput.value <= validaTableInput.max;
+        }
+    }
+
+    return isValid;
+
+}
 
 function Autobind(_: any, _2: string, descriptor: PropertyDescriptor) {
 
@@ -50,7 +84,25 @@ class ProjectInput {
         const enteredDesc = this.descInputElement.value;
         const enteredPeople = this.peopleInputElement.value;
 
-        if (enteredTitle.trim().length === 0 || enteredDesc.trim().length === 0 || enteredPeople.trim().length === 0) {
+        const titleValidatable: Validatable = {
+            value: enteredTitle,
+            required: true,
+        };
+
+        const descValidatable: Validatable = {
+            value: enteredDesc,
+            required: true,
+            minLength: 5
+        };
+
+        const peopleValidatable: Validatable = {
+            value: +enteredPeople,
+            required: true,
+            min: 1,
+            max: 5
+        };
+
+        if (!validate(titleValidatable) || !validate(descValidatable) || !validate(peopleValidatable)) {
             alert('Invalid input, please try again');
         }
         else {
